@@ -41,4 +41,8 @@ const handleFileRead = (readErr, content) => {
   }
 };
 
-readFile(FILE_NAME, 'utf-8', handleFileRead);
+const init = () => {
+  readFile(FILE_NAME, 'utf-8', handleFileRead);
+};
+
+init();
