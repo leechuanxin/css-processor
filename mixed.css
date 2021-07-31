@@ -1,0 +1,16 @@
+body {
+  color: rgb(240, 240, 240);
+  background-color: #ffffff;
+  border: rgb(255, 255, 0);
+  box-shadow: 0 0 7px #fff, 0 0 10px #fff, 0 0 21px #fff,
+    0 0 42px rgb(0, 47, 255), 0 0 82px #002fff, 0 0 92px #002fff,
+    0 0 102px #002fff, 0 0 151px rgb(0, 47, 255);
+}
+
+p {
+  background-color: #000000;
+}
+
+span {
+  background-color: rgb(128, 128, 128);
+}

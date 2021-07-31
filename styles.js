@@ -42,13 +42,11 @@ const replaceColors = (text, type) => {
       const rgbColorIndex = substr.search(/(rgb)\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*\)/g);
       const hexColorIndex = substr.search(/#[a-f0-9]{3,6}/g);
 
-      // no colors found
-      if (rgbColorIndex === -1 && hexColorIndex === -1) {
-        newline += substr;
-        substr = '';
-      }
       // rgb found next
-      else if (rgbColorIndex > hexColorIndex) {
+      if (
+        (rgbColorIndex > -1 && hexColorIndex > -1 && rgbColorIndex < hexColorIndex)
+        || (rgbColorIndex > -1 && hexColorIndex === -1)
+      ) {
         const rgbColorArr = substr.match(/(rgb)\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*\)/g);
         const color = rgbColorArr[0];
         const replacedColor = rgbToHex(color);
@@ -61,7 +59,10 @@ const replaceColors = (text, type) => {
         substr = substr.substring(substrToColorLength);
       }
       // hex found next
-      else {
+      else if (
+        (hexColorIndex > -1 && rgbColorIndex > -1 && hexColorIndex < rgbColorIndex)
+        || (hexColorIndex > -1 && rgbColorIndex === -1)
+      ) {
         const hexColorArr = substr.match(/#[a-f0-9]{3,6}/g);
         const color = hexColorArr[0];
         const replacedColor = hexToRgb(color);
@@ -72,6 +73,11 @@ const replaceColors = (text, type) => {
         newline += substr.substring(0, hexColorIndex) + replacedColor;
         // update substr, to begin searching after end of first instance of rgb color
         substr = substr.substring(substrToColorLength);
+      }
+      // no more colors found
+      else {
+        newline += substr;
+        substr = '';
       }
     }
 
