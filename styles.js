@@ -20,9 +20,7 @@ const replaceColors = (text, type) => {
       }
     }
   }
-  // input validation already handled in index.js
-  // thus, we assume else-case refers to rgbtohex
-  else {
+  else if (type === 'rgbtohex') {
     // rgb color matching
     // matches "rgb([1 to 3 digit number], [1 to 3 digit number], [1 to 3 digit number])",
     // including any spaces between the characters
@@ -34,6 +32,50 @@ const replaceColors = (text, type) => {
         line = line.replace(rgbColorArr[i], rgbToHex(rgbColorArr[i]));
       }
     }
+  }
+  // unknown type, we flip the types
+  else {
+    let substr = line;
+    let newline = '';
+
+    while (substr.length > 0) {
+      const rgbColorIndex = substr.search(/(rgb)\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*\)/g);
+      const hexColorIndex = substr.search(/#[a-f0-9]{3,6}/g);
+
+      // no colors found
+      if (rgbColorIndex === -1 && hexColorIndex === -1) {
+        newline += substr;
+        substr = '';
+      }
+      // rgb found next
+      else if (rgbColorIndex > hexColorIndex) {
+        const rgbColorArr = substr.match(/(rgb)\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*\)/g);
+        const color = rgbColorArr[0];
+        const replacedColor = rgbToHex(color);
+        // get length of existing substring up to end of first instance of rgb color;
+        const substrToColorLength = substr.substring(0, rgbColorIndex).concat(color).length;
+        // manual replacement: get string up to index of color to be replaced
+        // then, add replaced color directly
+        newline += substr.substring(0, rgbColorIndex) + replacedColor;
+        // update substr, to begin searching after end of first instance of rgb color
+        substr = substr.substring(substrToColorLength);
+      }
+      // hex found next
+      else {
+        const hexColorArr = substr.match(/#[a-f0-9]{3,6}/g);
+        const color = hexColorArr[0];
+        const replacedColor = hexToRgb(color);
+        // get length of existing substring up to end of first instance of rgb color;
+        const substrToColorLength = substr.substring(0, hexColorIndex).concat(color).length;
+        // manual replacement: get string up to index of color to be replaced
+        // then, add replaced color directly
+        newline += substr.substring(0, hexColorIndex) + replacedColor;
+        // update substr, to begin searching after end of first instance of rgb color
+        substr = substr.substring(substrToColorLength);
+      }
+    }
+
+    line = newline;
   }
 
   return line;
